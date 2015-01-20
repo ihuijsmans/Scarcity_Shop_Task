@@ -205,27 +205,25 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         % Draw price
                         DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', midYpix+100, white);
                          
-                        response
-                        
-                        switch response
-                            case 0
-                                color = {white, white};
-                                presenttime=0;
-                            case ButtonA
-                                color = {yellow, white};
-                                gotproduct = 1;
-                                presenttime = 4 - RT;
-                                screenId = 1;
-                            case ButtonB
-                                color = {white, yellow};
-                                presenttime = 4 - RT;
-                                screenId = 1;
-                            otherwise 
-                                color = {white, white};
-                                presenttime = 4 - RT;
-                                screenId = 1;
-                        end 
-                        
+                        if response
+                            switch response
+                                case ButtonA
+                                    color = {yellow, white};
+                                    gotproduct = 1;
+                                    presenttime = 4 - RT;
+                                    screenId = 1;
+                                case ButtonB
+                                    color = {white, yellow};
+                                    presenttime = 4 - RT;
+                                    screenId = 1;
+                            end
+                            %Go to next trial
+                            trial = trial + 1;
+                            run = 0;
+                        else
+                            color = {white, white};
+                            presenttime=0;
+                        end
                         %Draw Yes-NO
                         Screen('DrawText', window, ' Yes ', xleftbutton-textRect(3)/2, ybutton-textRect(4)/2, color{1});
                         Screen('DrawText', window, ' No ', xrightbutton-textRect(3)/2, ybutton-textRect(4)/2, color{2});
@@ -235,13 +233,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         Screen('FrameRect', window, white, textRect_NO);
                         
                         %Set HR trigger
-                        HR = c.HR_slow{condition_SA};
-                        
-                        %Count trialnumbers
-                        trial = trial + 1;
-                        
-                        %Start new trial
-                        run = 0;                    
+                        HR = c.HR_slow{condition_SA};               
                         
                     case 5
                         % ------------------- Screen 5 --------------------- %%
@@ -291,7 +283,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                     end
 
                     RT=(keyDownTimestamp-lastFlipTimestamp);
-                    response
+                    
                     if response == 0                                       %No answer: Too slow
                         screenId = 5;
                     elseif response == ButtonA || response == ButtonB      %Answer
