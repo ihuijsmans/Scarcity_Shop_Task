@@ -44,26 +44,26 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
     % Screen size
     [screenXpixels, screenYpixels] = Screen('WindowSize', window);
     midXpix = screenXpixels/2;
-    midYpix = screenYpixels/2.3;
-    [wth, hth] = Screen('WindowSize', window);
+    midYpix = screenYpixels/2;
 
     % Textstuff
     Screen('TextFont', window, 'Calibri');
     Screen('TextSize', window, 42);
     Screen('TextStyle', window, 0); 
+    textRect = Screen('TextBounds', window ,' Yes ');
     KbName('UnifyKeyNames');
     
     % Parameters for bidding task
     discount = 0.75;
-    image_rect = [0, 0, (screenYpixels*0.6/2), (screenYpixels*0.6/2)];
-    image_loc = CenterRectOnPointd(image_rect, midXpix, midYpix-100);
+    image_rect = [0, 0, (screenYpixels*0.4), (screenYpixels*0.4)];
+    image_loc = CenterRectOnPointd(image_rect, midXpix, midYpix-textRect(4));
     size_reminder = size(reminder);
-    textRect = Screen('TextBounds', window ,' Yes ');
-    xleftbutton = 0.343*wth;
-    xrightbutton = 0.63*wth;
-    ybutton = 0.685*hth;
-    textRect_YES = CenterRectOnPointd(textRect, xleftbutton, ybutton);
-    textRect_NO = CenterRectOnPointd(textRect, xrightbutton, ybutton);
+    xleftbutton = screenXpixels/3;
+    xrightbutton = (screenXpixels/3)*2;
+    ybutton = (screenYpixels/5)*4;
+    textRect_L = CenterRectOnPointd(textRect, xleftbutton, ybutton);
+    textRect_R = CenterRectOnPointd(textRect, xrightbutton, ybutton);
+    price_loc = (screenYpixels/3)*2;
     
     % Presentation times
     tooslow = 2;
@@ -114,7 +114,10 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
 
             %Start with first screen
             screenId = 1;
-
+            
+            %yes - no, left - right. yesno(1) = left, yesno(2) = right. 
+            yesno = c.yesno_LR(:,trial,condition_SA,block);
+            
             %Image texture
             image = c.trial{1,trial,block};
 
@@ -184,13 +187,13 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         Screen('DrawTexture', window, image, [], image_loc, 0);
 
                         % Draw price
-                        DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', midYpix+100, white);
+                        DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', price_loc, white);
                         
                         %Next screen
                         screenId = 4;
 
                         %%Set HR trigger
-                        HR = c.HR_startbid{condition_SA};
+                        HR = c.HR_price{condition_SA};
 
                         %Presentation time 
                         presenttime = rand +3;
@@ -203,37 +206,48 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         Screen('DrawTexture', window, image, [], image_loc, 0);
 
                         % Draw price
-                        DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', midYpix+100, white);
+                        DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', price_loc, white);
                          
                         if response
-                            switch response
-                                case ButtonA
-                                    color = {yellow, white};
-                                    gotproduct = 1;
-                                    presenttime = 4 - RT;
-                                    screenId = 1;
-                                case ButtonB
-                                    color = {white, yellow};
-                                    presenttime = 4 - RT;
-                                    screenId = 1;
-                            end
+                            % Nextscreen
+                            screenId = 1;
+                            
+                            %Presentation time
+                            presenttime = 4 - RT;
+                            
                             %Go to next trial
                             trial = trial + 1;
                             run = 0;
+                            
+                            %Set HR trigger
+                            HR = c.HR_yesno{condition_SA};
+                            
+                            %Color of buttons
+                            switch response
+                                case ButtonA
+                                    color = {yellow, white};
+                                    %if strcmp(c.yesno{yesno(2)}, c.yesno{1}) 
+                                    %    gotproduct = 1;
+                                    %end
+                                case ButtonB                            
+                                    color = {white, yellow};
+                            end
+                            
                         else
+                            %Color of buttons & presentation time
                             color = {white, white};
                             presenttime=0;
+                            %%Set HR trigger
+                            HR = c.HR_yesno{condition_SA};
                         end
+                        
                         %Draw Yes-NO
-                        Screen('DrawText', window, ' Yes ', xleftbutton-textRect(3)/2, ybutton-textRect(4)/2, color{1});
-                        Screen('DrawText', window, ' No ', xrightbutton-textRect(3)/2, ybutton-textRect(4)/2, color{2});
+                        Screen('DrawText', window, sprintf('%s', c.yesno{yesno(1)}), xleftbutton-textRect(3)/2, ybutton-textRect(4)/2, color{1});
+                        Screen('DrawText', window, sprintf('%s', c.yesno{yesno(2)}), xrightbutton-textRect(3)/2, ybutton-textRect(4)/2, color{2});
                         
-                        %Draw Rects
-                        Screen('FrameRect', window, white, textRect_YES);
-                        Screen('FrameRect', window, white, textRect_NO);
-                        
-                        %Set HR trigger
-                        HR = c.HR_slow{condition_SA};               
+                        %Draw Button rects
+                        Screen('FrameRect', window, white, textRect_L);
+                        Screen('FrameRect', window, white, textRect_R);                                   
                         
                     case 5
                         % ------------------- Screen 5 --------------------- %%
@@ -245,7 +259,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         presenttime=tooslow;
 
                         %Set HR trigger
-                        HR = c.HR_slow{condition_SA};
+                        HR = c.HR_wrong{condition_SA};
 
                         %Make them redo the trial
                         screenId = 1;
@@ -293,7 +307,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         enter = 0;
                         manualclose = 1;
                         display(sprintf('Shop Task\tppnr: %i\t blocknr: %i\t trialnumber:%i', ppnr, block, trial));
-                        HR = HR_quit;
+                        bitsiHR.sendTrigger(c.HR_quit{condition_SA});
                         break
                     elseif ButtonE                                         %Back to SG
                         enter = 0;
@@ -302,8 +316,6 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                     else                                                   %Wrong button
                         screenId = 6;
                     end
-                                       
-                    presenttime = 0;
                 end 
 
                 %Hold it on screen
@@ -330,7 +342,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
         close_bitsi;
     catch me
         me.message
-        me.stack
+        me.stack.line
         Screen('CloseAll')
     end
 end
