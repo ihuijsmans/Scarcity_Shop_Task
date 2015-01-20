@@ -97,7 +97,7 @@ h_imagetextures = h_imagetextures(:,h_order);
 
 %%                    Randomization/Counterbalancing                     %%
 
-% Between subjects counterbalancing (ppnr)
+% Between subjects counterbalancing productsample (H1, H2, U1, U2) (ppnr)
 images_HU = mod(ppnr,4)+1;
 
 %Divide imagetextures in parts
@@ -121,6 +121,7 @@ condition_runs_txt = [CombVec(h_txt, u_txt);fliplr(CombVec(h_txt, u_txt))];
 %Set condition according to participant nr row 1+2 = block 1, 3+4 = block 2
 c.runs = condition_runs(:,images_HU);
 c.runs_txt = condition_runs_txt(:,images_HU);
+
 
 %% Within subjects counterbalancing (within blocks)
 
@@ -170,6 +171,27 @@ for i = 1:2:4
         
     end
 end
+
+% Yes/no-left/right counterbalancing
+
+%Per S/A
+for i = 1:2
+    %Per game, per s/a
+    for j = 1:3
+        yesno = [zeros(2, length(s_h_u_block)/2)+1, zeros(2, length(s_h_u_block)/2)+2];
+        yesno(1,:) = shuffle(yesno(1,:));
+        for k = 1:length(s_h_u_block)
+            if yesno(1,k) == 1
+                yesno(2,k) = 2;
+            else
+                yesno(2,k) = 1;
+            end
+        end
+        c.yesno_LR(1:2,:,i,j) = yesno;
+    end
+end
+
+c.yesno = {' Yes ', ' No '};
 
 %Set HR trigger logs
 ShopTaskHRlogs;
