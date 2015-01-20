@@ -204,7 +204,8 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
 
                         % Draw price
                         DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', midYpix+100, white);
-                        
+                         
+                        response
                         
                         switch response
                             case 0
@@ -215,8 +216,12 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                                 gotproduct = 1;
                                 presenttime = 4 - RT;
                                 screenId = 1;
-                            otherwise 
+                            case ButtonB
                                 color = {white, yellow};
+                                presenttime = 4 - RT;
+                                screenId = 1;
+                            otherwise 
+                                color = {white, white};
                                 presenttime = 4 - RT;
                                 screenId = 1;
                         end 
