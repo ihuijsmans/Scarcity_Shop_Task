@@ -469,7 +469,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         %Prep saving
         filename = [results_dir,  sprintf('CD_ppnr_%i_time_%s_data.txt', ppnr, time)];
         fid_newtask = fopen(filename,'a+t');
-        fprintf(fid_newtask, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n', 'ppnr','block', 'condition_S/A', 'totaltrial','trial','screenId', 'presenttime', 'VBLTimestamp', 'lastFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'flip_stamp','HR Trigger', 'gotit','RT', 'condition_Product', 'brand', 'product', 'filename', 'retailprice', 'discountprice');
+        fprintf(fid_newtask, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n', 'ppnr','block', 'condition_S/A', 'totaltrial','trial','screenId', 'presenttime', 'VBLTimestamp', 'lastFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'flip_stamp','HR Trigger', 'gotit','RT', 'response', 'button_L', 'button_R', 'condition_Product', 'brand', 'product', 'filename', 'retailprice', 'discountprice');
 
         %%                      Prep saving Finger Tapping                       %%
 
