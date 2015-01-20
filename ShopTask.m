@@ -136,7 +136,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
 
             %Reset responses for each trial
             RT = 0;
-            gotproduct = 0;
+            gotproduct = 1;
 
             while run
 
@@ -219,20 +219,23 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                             trial = trial + 1;
                             run = 0;
                             
-                            %Set HR trigger
-                            HR = c.HR_yesno{condition_SA};
-                            
+                                                 
                             %Color of buttons
                             switch response
                                 case ButtonA
                                     color = {yellow, white};
-                                    %if strcmp(c.yesno{yesno(2)}, c.yesno{1}) 
-                                    %    gotproduct = 1;
-                                    %end
+                                    if strcmp(c.yesno{yesno(1)}, c.yesno{1}) 
+                                        gotproduct = 2;
+                                    end
                                 case ButtonB                            
                                     color = {white, yellow};
+                                    if strcmp(c.yesno{yesno(2)}, c.yesno{1}) 
+                                        gotproduct = 2;
+                                    end
                             end
                             
+                            %Set HR trigger
+                            HR = c.HR_gotnot{condition_SA}(gotproduct);
                         else
                             %Color of buttons & presentation time
                             color = {white, white};
@@ -324,7 +327,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                 %%                   Write data per Screen                    %%
 
                 %Save data of each screen
-                fprintf(fid, '%i\t%i\t%i\t%i\t%i\t%i\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%i\t%i\t%.6f\t%i\t%s\t%s\t%s\t%.2f\t%.2f\n', ppnr, block, condition_SA, ((block-1)*24)+trial, trial, screenId, presenttime, VBLTimestamp, lastFlipTimestamp, FlipTimestamp, MissedFlip, flip_stamp, HR, gotproduct, RT, condition, brand, product, filename, n_price, discountprice);
+                fprintf(fid, '%i\t%i\t%i\t%i\t%i\t%i\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%i\t%i\t%.6f\t%i\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\n', ppnr, block, condition_SA, ((block-1)*24)+trial, trial, screenId, presenttime, VBLTimestamp, lastFlipTimestamp, FlipTimestamp, MissedFlip, flip_stamp, HR, gotproduct, RT, response, c.yesno{yesno(1)}, c.yesno{yesno(2)}, condition, brand, product, filename, n_price, discountprice);
                                 
                 %Experiment finished
                 if length(c.trial(:,:,1)) < trial
@@ -343,7 +346,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
     catch me
         me.message
         me.stack.line
-        Screen('CloseAll')
+        Screen('CloseAll');
     end
 end
 
