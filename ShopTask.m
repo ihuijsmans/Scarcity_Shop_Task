@@ -45,26 +45,31 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
     [screenXpixels, screenYpixels] = Screen('WindowSize', window);
     midXpix = screenXpixels/2;
     midYpix = screenYpixels/2.3;
+    [wth, hth] = Screen('WindowSize', window);
 
-    %Parameters for bidding task
+    % Textstuff
+    Screen('TextFont', window, 'Calibri');
+    Screen('TextSize', window, 42);
+    Screen('TextStyle', window, 0); 
+    KbName('UnifyKeyNames');
+    
+    % Parameters for bidding task
     discount = 0.75;
     image_rect = [0, 0, (screenYpixels*0.6/2), (screenYpixels*0.6/2)];
     image_loc = CenterRectOnPointd(image_rect, midXpix, midYpix-100);
     size_reminder = size(reminder);
-   
-    %Presentation times
+    textRect = Screen('TextBounds', window ,' Yes ');
+    xleftbutton = 0.343*wth;
+    xrightbutton = 0.63*wth;
+    ybutton = 0.685*hth;
+    textRect_YES = CenterRectOnPointd(textRect, xleftbutton, ybutton);
+    textRect_NO = CenterRectOnPointd(textRect, xrightbutton, ybutton);
+    
+    % Presentation times
     tooslow = 2;
+    timeout = 4; 
    
-    %Textstuff
-    Screen('TextFont', window, 'Calibri');
-    Screen('TextSize', window, 24);
-    Screen('TextStyle', window, 0); 
-    KbName('UnifyKeyNames');
-    
-    %Break text
-    breaktext = 'The exeperiment is pauzed by the experimenter\n\nPlease wait for the experiment to restart';
-    
-    %Parameters different under pc/linux
+    % Parameters different under pc/linux
     if ispc
         euro = '€';
         reminder_loc = [screenXpixels-(((size_reminder(2)/4)*3)+100),100,screenXpixels-100,((size_reminder(1)/4)*3)+100];
@@ -84,7 +89,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
     
     %%              Prepare random trial picker                          %%
   
-    trialpicker = cell(length(c.trial(1,:,1)), 5);
+    trialpicker = cell(length(c.trial(1,:,1)), 6);
     
     %%                      Experiment loop                                  %%
 
@@ -116,7 +121,8 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
             %Image & trial info 
             %Set price numeric
             n_price = str2double(c.trial{2,trial,block}{5});
-
+            discountprice = n_price*discount;
+            
             %Condition
             condition = char(c.trial{2,trial,block}{1}); 
 
@@ -138,9 +144,24 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                 %%                  Flip through Screens                     %%
 
                 switch screenId
-
+        
                     case 1
-                    %%                     Screen 1                          %%
+                    %%                       Screen 1                        %%
+                    %                     Fixation Cross                      %
+                        %Fixation Cross
+                        Screen('DrawText', window, '+', screenXpixels/2, screenYpixels/2, white);
+
+                        %Presentation time
+                        presenttime = rand+1;
+
+                        %Set HR trigger
+                        HR = c.HR_fixcross{condition_SA};
+
+                        %Next Screen
+                        screenId = 2;
+
+                    case 2
+                    %%                     Screen 2                          %%
                     %                   Present Product                       %
 
                         %Image
@@ -153,17 +174,17 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         HR = c.HR_image{condition_SA};
 
                         %Next Screen
-                        screenId = 2;
+                        screenId = 3;
 
-                    case 2
-                    %%                         Screen 2                      %%
+                    case 3
+                    %%                         Screen 3                      %%
                     %                 Present Product + Price                 %
 
                         %Image
                         Screen('DrawTexture', window, image, [], image_loc, 0);
 
                         % Draw price
-                        DrawFormattedText(window, sprintf('%s%.2f', euro, n_price*discount), 'center', midYpix+100, red);
+                        DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', midYpix+100, white);
                         
                         %Next screen
                         screenId = 4;
@@ -174,15 +195,16 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         %Presentation time 
                         presenttime = rand +3;
 
-                     case 3
-                        % ------------------- Screen 3 --------------------- %%
+                     case 4
+                        % ------------------- Screen 4 --------------------- %%
                         %                      Choice                         %
 
                         %Image
                         Screen('DrawTexture', window, image, [], image_loc, 0);
 
                         % Draw price
-                        DrawFormattedText(window, sprintf('%s%.2f', euro, n_price*discount), 'center', midYpix+100, red);
+                        DrawFormattedText(window, sprintf('%s%.2f', euro, discountprice), 'center', midYpix+100, white);
+                        
                         
                         switch response
                             case 0
@@ -192,37 +214,29 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                                 color = {yellow, white};
                                 gotproduct = 1;
                                 presenttime = 4 - RT;
-                                screenId = 5;
+                                screenId = 1;
                             otherwise 
                                 color = {white, yellow};
                                 presenttime = 4 - RT;
-                                screenId = 5;
+                                screenId = 1;
                         end 
                         
-                        %Set responses
-                        Screen('DrawText', window, 'Yes', 0.343*wth, 0.685*hth, color{1});
-                        Screen('DrawText', window, 'No', 0.63*wth, 0.685*hth, color{2});
-
+                        %Draw Yes-NO
+                        Screen('DrawText', window, ' Yes ', xleftbutton-textRect(3)/2, ybutton-textRect(4)/2, color{1});
+                        Screen('DrawText', window, ' No ', xrightbutton-textRect(3)/2, ybutton-textRect(4)/2, color{2});
+                        
+                        %Draw Rects
+                        Screen('FrameRect', window, white, textRect_YES);
+                        Screen('FrameRect', window, white, textRect_NO);
+                        
                         %Set HR trigger
                         HR = c.HR_slow{condition_SA};
-                                   
-                    case 4
-                    %%                       Screen 4                        %%
-                    %                     Fixation Cross                      %
-                        %Fixation Cross
-                        Screen('DrawText', window, '+', screenXpixels/2, screenYpixels/2, white);
-
-                        %Presentation time
-                        presenttime = rand+1;
-
-                        %Set HR trigger
-                        HR = c.HR_fixcross{condition_SA};
-
-                        %Next Screen
-                        screenId = 1;
                         
                         %Count trialnumbers
                         trial = trial + 1;
+                        
+                        %Start new trial
+                        run = 0;                    
                         
                     case 5
                         % ------------------- Screen 5 --------------------- %%
@@ -254,18 +268,6 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         %Make them redo the trial
                         screenId = 1;
                         
-                    case 999
-                        %% Break the experiment in order to continue later
-
-                        %draw it all
-                        DrawFormattedText(window,breaktext, 'center', 0.46*screenYpixels, white);
-
-                        %Set HR trigger
-                        HR = 12;
-
-                        %Wait for buttonpress
-                        presenttime = 25;
-
                 end
 
                 %%                       Flip it all                         %%
@@ -284,24 +286,26 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                     end
 
                     RT=(keyDownTimestamp-lastFlipTimestamp);
-                    
-                    if response == 0
+                    response
+                    if response == 0                                       %No answer: Too slow
                         screenId = 5;
-                    elseif response == ButtonA || response == ButtonB
+                    elseif response == ButtonA || response == ButtonB      %Answer
                         screenId = 4;
-                    elseif response == ButtonD
-                        screenId = 999;
-                    elseif response == ButtonF                      
+                    elseif response == ButtonF                             %Quit                  
                         quit = 1;
                         enter = 0;
                         manualclose = 1;
                         display(sprintf('Shop Task\tppnr: %i\t blocknr: %i\t trialnumber:%i', ppnr, block, trial));
                         HR = HR_quit;
                         break
-                    else
+                    elseif ButtonE                                         %Back to SG
+                        enter = 0;
+                        quit = 0;
+                        break
+                    else                                                   %Wrong button
                         screenId = 6;
                     end
-                    
+                                       
                     presenttime = 0;
                 end 
 
@@ -311,8 +315,8 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                 %%                   Write data per Screen                    %%
 
                 %Save data of each screen
-                fprintf(fid, '%i\t%i\t%i\t%i\t%i\t%i\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%i\t%i\t%.6f\t%i\t%s\t%s\t%s\t%.2f\n', ppnr, block, condition_SA, ((block-1)*24)+trial, trial, screenId, presenttime, VBLTimestamp, lastFlipTimestamp, FlipTimestamp, MissedFlip, flip_stamp, HR, gotproduct, RT, condition, brand, product, filename, n_price);
-
+                fprintf(fid, '%i\t%i\t%i\t%i\t%i\t%i\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%i\t%i\t%.6f\t%i\t%s\t%s\t%s\t%.2f\t%.2f\n', ppnr, block, condition_SA, ((block-1)*24)+trial, trial, screenId, presenttime, VBLTimestamp, lastFlipTimestamp, FlipTimestamp, MissedFlip, flip_stamp, HR, gotproduct, RT, condition, brand, product, filename, n_price, discountprice);
+                                
                 %Experiment finished
                 if length(c.trial(:,:,1)) < trial
                     run = 0;
@@ -321,7 +325,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
             end
 
             %Save info for random trial picker
-            trialpicker((trial-1),:) = {((block-1)*length(c.trial(:,:,1)))+(trial-1), gotproduct, n_price, brand, product};
+            trialpicker((trial-1),:) = {((block-1)*length(c.trial(:,:,1)))+(trial-1), gotproduct, n_price, discountprice, brand, product};
 
         end
 
@@ -333,9 +337,6 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
         Screen('CloseAll')
     end
 end
-
-
-
 
 
 

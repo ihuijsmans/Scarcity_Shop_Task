@@ -17,8 +17,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     %
     % Last edit:
     %
-    % Tried github
-    % Tried a little more :p
+    % Add ShopTask
 
     %%                            Set seed                                   %%
 
@@ -65,7 +64,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         %Results
         results_dir = [cd '/Results/'];
 
-        addpath([cd '/Experiment Script Final/']);
+        addpath([cd '/Shop_Task/']);
 
         %%                          Screen stuff                                 %%   
 
@@ -273,22 +272,20 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
            
         %Create number of tokens in account according to wintrials
         for condition = 1:2
-            for stagegame = 1:3
+            for gamenr = 1:3
                 starttoken = c.starttoken(condition);
                 for i = 1:nrtrials
                     switch i
-                        case c.wintrials(stagegame,:)
+                        case c.wintrials(gamenr,:)
                             starttoken = starttoken + 1;
                         otherwise
                             starttoken = starttoken - 1;
                     end
-                    c.token{condition}(stagegame,i) = starttoken;
+                    c.token{condition}(gamenr,i) = starttoken;
                 end
             end
         end
-        
-            
-            
+
         c.tokens = [1, 10];
 
         %Set HR Trigger logs
@@ -460,11 +457,9 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         end
 
         vars.reminder = c.reminder;
-        vars.gotit = gotit;
-        vars.gotnot = gotnot;
 
         %prepare trial picker
-        trialpicker = cell(144,5);
+        trialpicker = cell(144,6);
         
         %To be able to append to trialpicker
         if ~restart
@@ -474,22 +469,19 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         %Prep saving
         filename = [results_dir,  sprintf('CD_ppnr_%i_time_%s_data.txt', ppnr, time)];
         fid_newtask = fopen(filename,'a+t');
-        fprintf(fid_newtask, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', 'ppnr','block', 'condition_S/A', 'totaltrial','trial','screenId', 'presenttime', 'VBLTimestamp', 'lastFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'flip_stamp','HR Trigger', 'startbid', 'bid_round', 'bid', 'computerprice', 'gotit','RT', 'condition', 'brand', 'product', 'filename', 'retailprice');
-
-        %Prep saving
-        filename = [results_dir,  sprintf('CD_ppnr_%i_time_%s_slider.txt', ppnr, time)];
-        fid_slider = fopen(filename,'a+t');
-        fprintf(fid_slider, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', 'trial', 'flip_nr', 'handle_x','response', 'fliptimestamp', 'tmp_bid','RT', 'VBLTimestamp', 'BidFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'ppnr','block', 'condition_txt', 'total_trial');
+        fprintf(fid_newtask, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n', 'ppnr','block', 'condition_S/A', 'totaltrial','trial','screenId', 'presenttime', 'VBLTimestamp', 'lastFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'flip_stamp','HR Trigger', 'gotit','RT', 'condition_Product', 'brand', 'product', 'filename', 'retailprice', 'discountprice');
 
         %%                      Prep saving Finger Tapping                       %%
 
-        filename = [results_dir,  sprintf('Finger_Tapping_ppnr_%i_time_%s.txt', ppnr, time)];
-        fid_FT = fopen(filename,'a+t');
-        fprintf(fid_FT, '%s\t%s\t%s\t%s\t%s\n', 'ppnr', 'screenID', 'fliptimestamp','whenflip','toc(mainstart)');
+        if strcmp(SCANNER, 'Skyra')
+            filename = [results_dir,  sprintf('Finger_Tapping_ppnr_%i_time_%s.txt', ppnr, time)];
+            fid_FT = fopen(filename,'a+t');
+            fprintf(fid_FT, '%s\t%s\t%s\t%s\t%s\n', 'ppnr', 'screenID', 'fliptimestamp','whenflip','toc(mainstart)');
+        end
 
     catch me
         me.message
-        me.stack
+        me.stack.line
         Screen('CloseAll')
         close_bitsi
         return
@@ -507,7 +499,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     instructions(window, instruct_dir, 9,nextkey, backkey);
     
     try 
-        while block < (length(c.condition)+1)   
+        while block < (length(c.condition)+1)  
             
             %If we pressed the quit button, break loop
             if quit == 1
