@@ -50,12 +50,16 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
     Screen('TextFont', window, 'Calibri');
     Screen('TextSize', window, 42);
     Screen('TextStyle', window, 0); 
-    textRect = Screen('TextBounds', window ,' Yes ');
+    textRect = Screen('TextBounds', window ,' Yes  ');
     KbName('UnifyKeyNames');
     
     % Parameters for bidding task
     discount = 0.75;
     image_rect = [0, 0, (screenYpixels*0.4), (screenYpixels*0.4)];
+    if isunix
+        textRect(4) = textRect(4) +(textRect(4)/2);
+        %textRect(4) = textRect(4)*2;
+    end
     image_loc = CenterRectOnPointd(image_rect, midXpix, midYpix-textRect(4));
     size_reminder = size(reminder);
     xleftbutton = screenXpixels/3;
@@ -71,7 +75,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
    
     % Parameters different under pc/linux
     if ispc
-        euro = '€';
+        euro = 'ï¿½';
         reminder_loc = [screenXpixels-(((size_reminder(2)/4)*3)+100),100,screenXpixels-100,((size_reminder(1)/4)*3)+100];
     else
         euro = 'â‚¬';
@@ -244,9 +248,18 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                             HR = c.HR_yesno{condition_SA};
                         end
                         
+                        %Layout unix vs pc
+                        if isunix
+                            yplacement = textRect(4)/3;
+                            xplacement = textRect(3)/1.5;
+                        else
+                            yplacement = textRect(4)/2;
+                            xplacement = textRect(3)/2;
+                        end
+                            
                         %Draw Yes-NO
-                        Screen('DrawText', window, sprintf('%s', c.yesno{yesno(1)}), xleftbutton-textRect(3)/2, ybutton-textRect(4)/2, color{1});
-                        Screen('DrawText', window, sprintf('%s', c.yesno{yesno(2)}), xrightbutton-textRect(3)/2, ybutton-textRect(4)/2, color{2});
+                        Screen('DrawText', window, sprintf(' %s ', c.yesno{yesno(1)}), xleftbutton-xplacement, ybutton - yplacement, color{1});
+                        Screen('DrawText', window, sprintf(' %s ', c.yesno{yesno(2)}), xrightbutton-xplacement, ybutton - yplacement, color{2});
                         
                         %Draw Button rects
                         Screen('FrameRect', window, white, textRect_L);
@@ -295,7 +308,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                 
                 response = 0;
                 if presenttime == 0
-                    while (response == 0 && response ~= 15) && ((GetSecs - lastFlipTimestamp )<= timeout)
+                    while (response == 0 || response == 15) && ((GetSecs - lastFlipTimestamp )<= timeout)
                         [response, keyDownTimestamp] = bitsiboxButtons.getResponse(0.001, true);
                     end
 
@@ -328,7 +341,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
 
                 %Save data of each screen
                 fprintf(fid, '%i\t%i\t%i\t%i\t%i\t%i\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%i\t%i\t%.6f\t%i\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\t%.2f\n', ppnr, block, condition_SA, ((block-1)*24)+trial, trial, screenId, presenttime, VBLTimestamp, lastFlipTimestamp, FlipTimestamp, MissedFlip, flip_stamp, HR, gotproduct, RT, response, c.yesno{yesno(1)}, c.yesno{yesno(2)}, condition, brand, product, filename, n_price, discountprice);
-                                
+                
                 %Experiment finished
                 if length(c.trial(:,:,1)) < trial
                     run = 0;
@@ -347,6 +360,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
         me.message
         me.stack.line
         Screen('CloseAll');
+        close_bitsi
     end
 end
 
