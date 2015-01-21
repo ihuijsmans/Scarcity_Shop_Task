@@ -43,7 +43,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     end
     
     try 
-        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{4};
+        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{2};
 
         % setup bitsi stuff for button responses
         setup_bits;
@@ -381,12 +381,6 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         inst_shoptask2 = imread(strtrim([stimuli_dir_general 'ST_instr2.JPG']));
         inst_shoptask2 = Screen('MakeTexture', window, inst_shoptask2);
         
-        %Got product check
-        gotit = imread(strtrim([stimuli_dir_general 'gotit.JPG']));
-        
-        %Not Got product cross
-        gotnot = imread(strtrim([stimuli_dir_general 'gotnot.JPG']));
-
         %Go to next round of games
         s_endtoken = imread(strtrim([stimuli_dir_general 's_endtoken.JPG']));
         s_endtoken = Screen('MakeTexture', window, s_endtoken);
@@ -473,7 +467,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
 
         %%                      Prep saving Finger Tapping                       %%
 
-        if strcmp(SCANNER, 'Skyra')
+        if isunix
             filename = [results_dir,  sprintf('Finger_Tapping_ppnr_%i_time_%s.txt', ppnr, time)];
             fid_FT = fopen(filename,'a+t');
             fprintf(fid_FT, '%s\t%s\t%s\t%s\t%s\n', 'ppnr', 'screenID', 'fliptimestamp','whenflip','toc(mainstart)');
@@ -540,7 +534,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
                 
                 %Reset nr of tokens according to condition for each block,
                 %but not when restarting experiment
-                if restart
+                if nrtrialcounter >1
                     tokens = c.token{c.condition(block)}(stagegame,nrtrialcounter-1);
                 else
                     tokens = c.starttoken(c.condition(block));
@@ -985,7 +979,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
                     response = 0;
                     if presenttime == 0
                         if response == 0
-                            while (response == 0 && response ~= 15) && ((GetSecs - lastFlipTimestamp )<= timeout)
+                            while (response == 0 || response == 15) && ((GetSecs - lastFlipTimestamp )<= timeout)
 
                                 %This is buttonbox code?
                                 [response, keyDownTimestamp] = bitsiboxButtons.getResponse(0.001, true);
@@ -1102,7 +1096,8 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     catch me
         Screen('CloseAll');
         me.message
-        me.stack
+        me.stack.line
+        close_bitsi
         return
     end
 
