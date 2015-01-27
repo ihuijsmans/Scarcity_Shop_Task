@@ -112,6 +112,22 @@ for trial = 1:length(c.order)
     end
 end
 
+
+yesno = [zeros(2, length(c.order)/2)+1, zeros(2, length(c.order)/2)+2];
+yesno(1,:) = shuffle(yesno(1,:));
+for k = 1:length(c.order)
+    if yesno(1,k) == 1
+        yesno(2,k) = 2;
+    else
+        yesno(2,k) = 1;
+    end
+end
+c.yesno_LR= yesno;
+
+yes = 'Yes';
+no = ' No ';
+c.yesno = {yes,no};
+
 vars = c;
 
 end

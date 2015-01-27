@@ -36,7 +36,7 @@ stimuli_dir_SMatch = [cd '\Scarcity Stimuli\Shape Matching\'];
 %WD for General images
 stimuli_dir_general = [cd '\Scarcity Stimuli\General\'];
 %WD for instructions
-instruct_dir = [cd '\Instructions\Practice\'];
+instruct_dir = [cd '\Instructions\Practice_BT\'];
 %Results
 results_dir = [cd '\Results\'];
 
@@ -770,7 +770,7 @@ end
 instructions(window, instruct_dir, 9:21, nextkey, backkey);
 
 %Practice Shoptask
-BEH_ShopTask_01_05_practice(window, vars, 1, 1, ppnr, mainstart, 1, fid_newtask, fid_slider, SCANNER)
+Bidding_Task_Practice(window, vars, 1, 1, ppnr, mainstart, 1, fid_newtask, fid_slider, SCANNER);
 
 %Instructions real experiment
 instructions(window, instruct_dir, 22:23, nextkey, backkey);

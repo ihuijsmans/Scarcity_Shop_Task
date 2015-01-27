@@ -1,4 +1,4 @@
-function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, mainstart, reminder, condition_SA, fid, SCANNER)
+function [trialpicker, manualclose] = ShopTask_Practice(window, c, block, trial, ppnr, mainstart, reminder, condition_SA, fid, SCANNER)
 %% Scarcity Project: Shop Task 
     % Inge Huijsmans 
     %
@@ -25,6 +25,8 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
     % setup bitsi stuff for button responses & HR trigger  
     setup_bits;
     ShopTaskHRlogs;
+    
+    condition_SA = 1;
     
     %-------------------------------------------------------------------------%
     %------------------  Experiment Settings, screen parameters --------------%
@@ -120,23 +122,24 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
             screenId = 1;
             
             %yes - no, left - right. yesno(1) = left, yesno(2) = right. 
-            yesno = c.yesno_LR(:,trial,condition_SA,block);
+            %yesno = c.yesno_LR(:,trial,condition_SA,block);
+            yesno = c.yesno_LR(:,trial);
             
             %Image texture
-            image = c.trial{1,trial,block};
+            image = c.trial{1,trial};
 
             %Image & trial info 
             %Set price numeric
-            n_price = str2double(c.trial{2,trial,block}{5});
+            n_price = str2double(c.trial{2,trial}{5});
             discountprice = n_price*discount;
             
             %Condition
-            condition = char(c.trial{2,trial,block}{1}); 
+            condition = char(c.trial{2,trial}{1}); 
 
             %Saving info
-            brand = char(c.trial{2,trial,block}{2});
-            product = char(c.trial{2,trial,block}{3});
-            filename = char(c.trial{2,trial,block}{6});
+            brand = char(c.trial{2,trial}{2});
+            product = char(c.trial{2,trial}{3});
+            filename = char(c.trial{2,trial}{6});
 
             %Reset responses for each trial
             RT = 0;

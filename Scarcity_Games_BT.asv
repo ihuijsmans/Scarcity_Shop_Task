@@ -1,4 +1,4 @@
-function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
+function Scarcity_Games_BT(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     % Scarcity Games
     % Wenwen Xie, edited by Inge Huijsmans
     %
@@ -17,7 +17,8 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     %
     % Last edit:
     %
-    % Add ShopTask
+    % Tried github
+    % Tried a little more :p
 
     %%                            Set seed                                   %%
 
@@ -43,7 +44,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     end
     
     try 
-        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{2};
+        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{4};
 
         % setup bitsi stuff for button responses
         setup_bits;
@@ -64,7 +65,6 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         %Results
         results_dir = [cd '/Results/'];
 
-        addpath([cd '/Shop_Task/']);
 
         %%                          Screen stuff                                 %%   
 
@@ -160,18 +160,25 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         squareXpos = [screenXpixels*0.35, screenXpixels*0.65];
         numSquares = 2;
         question_DComp = {'Which rectangle contains more dots?'}; 
-        wintrial_DComp  = {3,5,6,7,11,13,15,16,17,20,23,24,27,28,30};
-        stop_DComp = 27;                                             %CHANGE STOPTRIAL
+        %wintrial_DComp  = {3,5,6,7,11,13,15,16,17,20,23,24,27,28,30};
+        %stop_DComp = 27;                                             %CHANGE STOPTRIAL
 
         %Shape Matching game
         question_SMatch = {'Do they match?'};
-        wintrial_SMatch = {2,4,7,9,10,11,13,17,18,21,23,25,27,28,30};
-        stop_SMatch = 25;                                            %CHANGE STOPTRIAL
+        %wintrial_SMatch = {2,4,7,9,10,11,13,17,18,21,23,25,27,28,30};
+        %stop_SMatch = 25;                                            %CHANGE STOPTRIAL
 
         %Dot Counting Game
-        wintrial_DCount = {3,4,7,8,10,13,14,15,17,21,23,24,27,29,30};
-        stop_DCount = 23;                                            %CHANGE STOPTRIAL
+        %wintrial_DCount = {3,4,7,8,10,13,14,15,17,21,23,24,27,29,30};
+        %stop_DCount = 23;                                            %CHANGE STOPTRIAL
 
+        wintrial_1 = {3,5,6,7,11,13,15,16,17,20,23,24,27,28,30};
+        wintrial_2 = {2,4,7,9,10,11,13,17,18,21,23,25,27,28,29,30};
+        wintrial_3 = {3,4,8,10,13,14,15,17,21,23,24,27,29,30};
+        stop_1 = 27;
+        stop_2 = 25;
+        stop_3 = 23;
+                
         % Questionnaire info
         nextkey = 'rightarrow';
         backkey = 'leftarrow';
@@ -262,21 +269,23 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         c.condition = condition;
         c.c_game = game_order;
         c.game_TXT = game_TXT;
-        c.wintrials = [wintrial_DComp; wintrial_DCount; wintrial_SMatch];
+        %c.wintrials = [wintrial_DComp; wintrial_DCount; wintrial_SMatch];
+        c.wintrials = {wintrial_1; wintrial_2; wintrial_3};
         c.left = {'Left', 'Less', 'Yes'};
         c.right = {'Right', 'More', 'No'};
         c.question = {repmat(question_DComp,[1,nrtrials]), question_DCount, repmat(question_SMatch,[1,nrtrials])};
-        c.stop = [stop_DComp, stop_DCount, stop_SMatch];
-        c.starttoken = [1,10];
+        %c.stop = [stop_DComp, stop_DCount, stop_SMatch];
+        c.stop = [stop_1, stop_2, stop_3];
+        c.starttoken = {[1,1,3],[10,10,12]};
         c.token = {ones(3,30),ones(3,30)*10};
            
         %Create number of tokens in account according to wintrials
         for condition = 1:2
             for gamenr = 1:3
-                starttoken = c.starttoken(condition);
+                starttoken = c.starttoken{condition}(gamenr);
                 for i = 1:nrtrials
                     switch i
-                        case c.wintrials(gamenr,:)
+                        case c.wintrials{gamenr,:}
                             starttoken = starttoken + 1;
                         otherwise
                             starttoken = starttoken - 1;
@@ -285,7 +294,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
                 end
             end
         end
-
+              
         c.tokens = [1, 10];
 
         %Set HR Trigger logs
@@ -311,9 +320,11 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         tokenplus1 = Screen('MakeTexture', window, progressbars(:,:,:,3));
         tokenplus10 = Screen('MakeTexture', window, progressbars(:,:,:,4));
         tokenplus11 = Screen('MakeTexture', window, progressbars(:,:,:,5));
-        tokenplus2 = Screen('MakeTexture', window, progressbars(:,:,:,6));
-        tokenplus8 = Screen('MakeTexture', window, progressbars(:,:,:,7));
-        tokenplus9 = Screen('MakeTexture', window, progressbars(:,:,:,8));
+        tokenplus12 = Screen('MakeTexture', window, progressbars(:,:,:,6));
+        tokenplus2 = Screen('MakeTexture', window, progressbars(:,:,:,7));
+        tokenplus3 = Screen('MakeTexture', window, progressbars(:,:,:,8));
+        tokenplus8 = Screen('MakeTexture', window, progressbars(:,:,:,9));
+        tokenplus9 = Screen('MakeTexture', window, progressbars(:,:,:,10));
 
         %Read token reminding images
         c.reminder = cell(1,2);
@@ -363,24 +374,31 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         end1 = Screen('MakeTexture', window, end1);
 
         %Switch to other task
-        s_switchtoken = imread(strtrim([stimuli_dir_general 's_switchtoken.JPG']));
-        s_switchtoken = Screen('MakeTexture', window, s_switchtoken);
-        a_switchtoken = imread(strtrim([stimuli_dir_general 'a_switchtoken.JPG']));
-        a_switchtoken = Screen('MakeTexture', window, a_switchtoken);
+        s1_switchtoken = imread(strtrim([stimuli_dir_general 's1_switchtoken.JPG']));
+        s1_switchtoken = Screen('MakeTexture', window, s1_switchtoken);
+        a1_switchtoken = imread(strtrim([stimuli_dir_general 'a1_switchtoken.JPG']));
+        a1_switchtoken = Screen('MakeTexture', window, a1_switchtoken);
 
-        c.switchtoken = {s_switchtoken, a_switchtoken};
+        
+        c.switchtoken = [s1_switchtoken, a1_switchtoken];
 
         %Return stagegame
         return_stagegame = imread(strtrim([stimuli_dir_general 'return_stagegame.JPG']));
         return_stagegame = Screen('MakeTexture', window, return_stagegame);
 
         %Intructions shoptask
-        inst_shoptask1 = imread(strtrim([stimuli_dir_general 'ST_instr1.JPG']));
+        inst_shoptask1 = imread(strtrim([stimuli_dir_general 'BT_instr1.JPG']));
         inst_shoptask1 = Screen('MakeTexture', window, inst_shoptask1);
    
-        inst_shoptask2 = imread(strtrim([stimuli_dir_general 'ST_instr2.JPG']));
+        inst_shoptask2 = imread(strtrim([stimuli_dir_general 'BT_instr2.JPG']));
         inst_shoptask2 = Screen('MakeTexture', window, inst_shoptask2);
         
+        %Got product check
+        gotit = imread(strtrim([stimuli_dir_general 'gotit.JPG']));
+        
+        %Not Got product cross
+        gotnot = imread(strtrim([stimuli_dir_general 'gotnot.JPG']));
+
         %Go to next round of games
         s_endtoken = imread(strtrim([stimuli_dir_general 's_endtoken.JPG']));
         s_endtoken = Screen('MakeTexture', window, s_endtoken);
@@ -451,19 +469,26 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
         end
 
         vars.reminder = c.reminder;
+        vars.gotit = gotit;
+        vars.gotnot = gotnot;
 
         %prepare trial picker
-        trialpicker = cell(144,6);
+        trialpicker = cell(144,5);
         
         %To be able to append to trialpicker
         if ~restart
-            save([results_dir sprintf('wintrial_%i.mat', ppnr)], 'trialpicker');   
+            save([results_dir sprintf('wintrial_BT_%i.mat', ppnr)], 'trialpicker');   
         end
         
         %Prep saving
         filename = [results_dir,  sprintf('CD_ppnr_%i_time_%s_data.txt', ppnr, time)];
         fid_newtask = fopen(filename,'a+t');
-        fprintf(fid_newtask, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n', 'ppnr','block', 'condition_S/A', 'totaltrial','trial','screenId', 'presenttime', 'VBLTimestamp', 'lastFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'flip_stamp','HR Trigger', 'gotit','RT', 'response', 'button_L', 'button_R', 'condition_Product', 'brand', 'product', 'filename', 'retailprice', 'discountprice');
+        fprintf(fid_newtask, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', 'ppnr','block', 'condition_S/A', 'totaltrial','trial','screenId', 'presenttime', 'VBLTimestamp', 'lastFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'flip_stamp','HR Trigger', 'startbid', 'bid_round', 'bid', 'computerprice', 'gotit','RT', 'condition', 'brand', 'product', 'filename', 'retailprice');
+
+        %Prep saving
+        filename = [results_dir,  sprintf('CD_ppnr_%i_time_%s_slider.txt', ppnr, time)];
+        fid_slider = fopen(filename,'a+t');
+        fprintf(fid_slider, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', 'trial', 'flip_nr', 'handle_x','response', 'fliptimestamp', 'tmp_bid','RT', 'VBLTimestamp', 'BidFlipTimestamp', 'FlipTimestamp', 'MissedFlip', 'ppnr','block', 'condition_txt', 'total_trial');
 
         %%                      Prep saving Finger Tapping                       %%
 
@@ -472,7 +497,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
             fid_FT = fopen(filename,'a+t');
             fprintf(fid_FT, '%s\t%s\t%s\t%s\t%s\n', 'ppnr', 'screenID', 'fliptimestamp','whenflip','toc(mainstart)');
         end
-
+        
     catch me
         me.message
         me.stack.line
@@ -493,7 +518,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     instructions(window, instruct_dir, 9,nextkey, backkey);
     
     try 
-        while block < (length(c.condition)+1)  
+        while block < (length(c.condition)+1)   
             
             %If we pressed the quit button, break loop
             if quit == 1
@@ -526,8 +551,8 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
                 if quit == 1
                     break
                 end
-
-                %Reset nrtrial counter unless we just restarted the experiment
+                
+                %Reset trialcounter unless we restarted
                 if restart == 0
                     nrtrialcounter = 1;
                 end
@@ -537,7 +562,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
                 if nrtrialcounter >1
                     tokens = c.token{c.condition(block)}(stagegame,nrtrialcounter-1);
                 else
-                    tokens = c.starttoken(c.condition(block));
+                    tokens = c.token{c.condition(block)}(stagegame,nrtrialcounter)+1;
                 end
 
                 %Reset count & trackers for each block
@@ -868,7 +893,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
 
                             %% Feedback, did they win tokens?
                             switch nrtrialcounter
-                                case c.wintrials(c.c_game(stagegame),:)
+                                case c.wintrials{stagegame,:}
                                     DrawFormattedText(window, 'You win 1 token!', 'center', 'center', green);
                                     tokens = tokens + 1;
                                 otherwise
@@ -893,7 +918,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
 
 
                             switch tokens
-                                case {1 2 8 9 10 11}   
+                                case {1 2 3 8 9 10 11 12}     
                                     color = green;
                                     wintoken = eval(sprintf('tokenplus%d',tokens));
                                     Screen('DrawTexture', window, wintoken, [], [0.44*wth 0.17*hth 0.54*wth 0.45*hth], 0);
@@ -916,7 +941,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
                             %Nextscreen
                             screenID = 2;
 
-                            if nrtrialcounter == c.stop(c.c_game(stagegame))
+                            if nrtrialcounter == c.stop(stagegame)
                                 screenID = 1.2;
                             end
 
@@ -1041,14 +1066,14 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
                         close_bitsi;
                         
                         %load from saved data
-                        load([results_dir sprintf('wintrial_%i.mat', ppnr)]); 
+                        load([results_dir sprintf('wintrial_BT_%i.mat', ppnr)]); 
                         
                         %Shoptask
-                        [trialpicker_block, manualclose] = ShopTask(window, vars, stagegame+((block-1)*3), shoptasktrial, ppnr, mainstart, c.reminder{c.condition(block)}, c.condition(block), fid_newtask, SCANNER);
+                        [trialpicker_block, manualclose] = Bidding_Task(window, vars, stagegame+((block-1)*3), shoptasktrial, ppnr, mainstart, c.reminder{c.condition(block)}, c.condition(block), fid_newtask, fid_slider, ft_id, SCANNER);
                         trialpicker((((stagegame+((block-1)*3))*24)-23):((stagegame+((block-1)*3))*24),:) = trialpicker_block;
                         
                         %Quick save of wintrials per pp       
-                        save([results_dir sprintf('wintrial_%i.mat', ppnr)], 'trialpicker');                        
+                        save([results_dir sprintf('wintrial_BT_%i.mat', ppnr)], 'trialpicker');                        
                         
                         %Reset start point of next shoptask
                         shoptasktrial = 1;
@@ -1096,8 +1121,7 @@ function Scarcity_Games(ppnr, block, stagegame, nrtrialcounter, shoptasktrial)
     catch me
         Screen('CloseAll');
         me.message
-        me.stack.line
-        close_bitsi
+        me.stack
         return
     end
 
