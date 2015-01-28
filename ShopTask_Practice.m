@@ -52,23 +52,26 @@ function [trialpicker, manualclose] = ShopTask_Practice(window, c, block, trial,
     Screen('TextFont', window, 'Calibri');
     Screen('TextSize', window, 42);
     Screen('TextStyle', window, 0); 
-    textRect = Screen('TextBounds', window ,' Yes  ');
+    textRect_Y = Screen('TextBounds', window ,' Yes ');
+    textRect_N = Screen('TextBounds', window ,' No ');
     KbName('UnifyKeyNames');
     
     % Parameters for bidding task
-    discount = 0.75;
+    discount = 0.5;
     image_rect = [0, 0, (screenYpixels*0.4), (screenYpixels*0.4)];
     if isunix
-        textRect(4) = textRect(4) +(textRect(4)/2);
+        textRect_Y(4) = textRect_Y(4) +(textRect_Y(4)/2);
+        textRect_N(4) = textRect_N(4) +(textRect_N(4)/2);
         %textRect(4) = textRect(4)*2;
     end
-    image_loc = CenterRectOnPointd(image_rect, midXpix, midYpix-textRect(4));
+    
+    textRect_YES = Screen('TextBounds', window, 'Yes');
+    textRect_NO = Screen('TextBounds', window, 'No');
+    image_loc = CenterRectOnPointd(image_rect, midXpix, midYpix-textRect_Y(4));
     size_reminder = size(reminder);
     xleftbutton = screenXpixels/3;
     xrightbutton = (screenXpixels/3)*2;
     ybutton = (screenYpixels/5)*4;
-    textRect_L = CenterRectOnPointd(textRect, xleftbutton, ybutton);
-    textRect_R = CenterRectOnPointd(textRect, xrightbutton, ybutton);
     price_loc = (screenYpixels/3)*2;
     
     % Presentation times
@@ -253,20 +256,33 @@ function [trialpicker, manualclose] = ShopTask_Practice(window, c, block, trial,
                         
                         %Layout unix vs pc
                         if isunix
-                            yplacement = textRect(4)/3;
-                            xplacement = textRect(3)/1.5;
+                            wierdnomovement = 3;
+                            yplacement = textRect_Y(4)/3;
                         else
-                            yplacement = textRect(4)/2;
-                            xplacement = textRect(3)/2;
+                            wierdnomovement = 12;
+                            yplacement = textRect_Y(4)/2;
                         end
-                            
+                                                
+                        %Layout yes vs bi
+                        if yesno(2) == 2
+                            xplacement_LEFT = (textRect_YES(3)/2);
+                            xplacement_RIGHT = (textRect_NO(3)/2)+wierdnomovement;
+                            textRect_L = CenterRectOnPointd(textRect_Y, xleftbutton, ybutton);
+                            textRect_R = CenterRectOnPointd(textRect_N, xrightbutton, ybutton);
+                        else
+                            xplacement_LEFT = (textRect_NO(3)/2)+wierdnomovement;  
+                            xplacement_RIGHT = textRect_YES(3)/2;  
+                            textRect_L = CenterRectOnPointd(textRect_N, xleftbutton, ybutton);
+                            textRect_R = CenterRectOnPointd(textRect_Y, xrightbutton, ybutton);
+                        end 
+                                                   
                         %Draw Yes-NO
-                        Screen('DrawText', window, sprintf(' %s ', c.yesno{yesno(1)}), xleftbutton-xplacement, ybutton - yplacement, color{1});
-                        Screen('DrawText', window, sprintf(' %s ', c.yesno{yesno(2)}), xrightbutton-xplacement, ybutton - yplacement, color{2});
+                        Screen('DrawText', window, sprintf('%s', c.yesno{yesno(1)}), xleftbutton-xplacement_LEFT, ybutton - yplacement, color{1});
+                        Screen('DrawText', window, sprintf('%s', c.yesno{yesno(2)}), xrightbutton-xplacement_RIGHT, ybutton - yplacement, color{2});
                         
                         %Draw Button rects
-                        Screen('FrameRect', window, white, textRect_L);
-                        Screen('FrameRect', window, white, textRect_R);                                   
+                        Screen('FrameRect', window, white, textRect_L,3);
+                        Screen('FrameRect', window, white, textRect_R,3);
                         
                     case 5
                         % ------------------- Screen 5 --------------------- %%

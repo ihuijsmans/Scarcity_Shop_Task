@@ -44,7 +44,7 @@ function Scarcity_Games_BT(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
     end
     
     try 
-        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{2};
+        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{4};
 
         % setup bitsi stuff for button responses
         setup_bits;
@@ -716,7 +716,7 @@ function Scarcity_Games_BT(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
 
                             %% Nr of tokens before switch to shoptask
                             %Per level of scarcity/abundance
-                            Screen('DrawTexture', window, c.switchtoken{c.condition(block)}, [], [], 0);
+                            Screen('DrawTexture', window, c.switchtoken(c.condition(block)), [], [], 0);
                             Screen('DrawTexture', window, reminder, [], reminder_loc, 0);
                             presenttime=readinstructtime;
 
@@ -975,7 +975,11 @@ function Scarcity_Games_BT(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
                             HR = 10; 
 
                             %Next screen
-                            screenID = 889;
+                            if ispc
+                                nextblock = 1; 
+                            else
+                                screenID = 889;
+                            end
 
                         case 889
                             %% Close it all down Pt 2

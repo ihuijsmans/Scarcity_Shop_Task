@@ -963,7 +963,11 @@ function Scarcity_Games_ST(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
                             HR = 10; 
 
                             %Next screen
-                            screenID = 889;
+                            if ispc
+                                nextblock = 1;
+                            else
+                                screenID = 889;
+                            end
 
                         case 889
                             %% Close it all down Pt 2

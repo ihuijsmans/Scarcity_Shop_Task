@@ -78,7 +78,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
    
     % Parameters different under pc/linux
     if ispc
-        euro = 'ï¿½';
+        euro = '€';
         reminder_loc = [screenXpixels-(((size_reminder(2)/4)*3)+100),100,screenXpixels-100,((size_reminder(1)/4)*3)+100];
     else
         euro = 'â‚¬';
@@ -255,12 +255,10 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
                         if isunix
                             wierdnomovement = 3;
                             yplacement = textRect_Y(4)/3;
-                            %xplacement = textRect(3)/1.5;
                         else
-                            wierdnomovement = 12;
-                            %wierdnomovement = 0;
+                            wierdnomovement = 0;
+                            %wierdnomovement = 12;
                             yplacement = textRect_Y(4)/2;
-                            %xplacement = textRect(3)/2;
                         end
                                                 
                         %Layout yes vs bi
