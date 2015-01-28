@@ -44,7 +44,7 @@ function Scarcity_Games_ST(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
     end
     
     try 
-        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{2};
+        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{4};
 
         % setup bitsi stuff for button responses
         setup_bits;
