@@ -44,7 +44,7 @@ function Scarcity_Games_ST(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
     end
     
     try 
-        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{4};
+        SCANNER = {'Skyra','Dummy','Debugging','Keyboard','buttonbox'}; SCANNER = SCANNER{2};
 
         % setup bitsi stuff for button responses
         setup_bits;
@@ -479,7 +479,7 @@ function Scarcity_Games_ST(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
 
         %%                      Prep saving Finger Tapping                       %%
 
-        if isunix
+        if strcmp(SCANNER, 'Skyra')
             filename = [results_dir,  sprintf('Finger_Tapping_ppnr_%i_time_%s.txt', ppnr, time)];
             fid_FT = fopen(filename,'a+t');
             fprintf(fid_FT, '%s\t%s\t%s\t%s\t%s\n', 'ppnr', 'screenID', 'fliptimestamp','whenflip','toc(mainstart)');
@@ -567,10 +567,10 @@ function Scarcity_Games_ST(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
                             if block == 1 && restart == 0
                                 scannr = 1;
                                 %Go to finger tapping
-                                if ispc
-                                    screenID  = 0.3;
+                                if strcmp(SCANNER, 'Skyra')
+                                    screenID  = 1000;
                                 else
-                                    screenID = 1000;
+                                    screenID = 0.3;
                                 end
                                     
                             elseif block == 2 && restart == 0
@@ -919,8 +919,8 @@ function Scarcity_Games_ST(ppnr, block, stagegame, nrtrialcounter, shoptasktrial
                             end
 
                             %draw it all
-                            DrawFormattedText(window,txt_totaltoken, 'center', 0.546*hth, white);
-                            DrawFormattedText(window,txt_nrtokens, xCenter +(w_txt_totaltoken/2), 0.546*hth, color);
+                            [x,y] = DrawFormattedText(window,txt_totaltoken, 'center', 0.546*hth, white);
+                            DrawFormattedText(window,txt_nrtokens, x, y, color);
 
                             %Present screen
                             presenttime = pt_progressbar;

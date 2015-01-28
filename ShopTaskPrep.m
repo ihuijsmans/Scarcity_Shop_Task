@@ -191,16 +191,7 @@ for i = 1:2
     end
 end
 
-% if unix
-%     yes = ' Yes ';
-%     no = ' No ';
-% else
-%     yes = ' Yes ';
-%     no = '  No ';
-% end
-yes = 'Yes';
-no = ' No ';
-c.yesno = {yes,no};
+c.yesno = {'Yes','No'};
 
 %Set HR trigger logs
 ShopTaskHRlogs;

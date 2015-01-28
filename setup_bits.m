@@ -29,7 +29,7 @@ switch SCANNER
     case 'Dummy'
         
         %Set WD
-        cd '/home_local/meduser/Desktop/data/users/inghui/Scarcity Tasks Inge/Main_Experiment/';
+        cd '/home_local/meduser/Desktop/data/users/inghui/MRI Script 2015-01-28/';
         
         %Set trigger
         scannertrigger = 97;
