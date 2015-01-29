@@ -178,9 +178,9 @@ end
 for i = 1:2
     %Per game, per s/a
     for j = 1:3
-        yesno = [zeros(2, length(zeros(1,24))/2)+1, zeros(2, length(zeros(1,24))/2)+2];
+        yesno = [zeros(2, length(s_h_u_block)/2)+1, zeros(2, length(s_h_u_block)/2)+2];
         yesno(1,:) = shuffle(yesno(1,:));
-        for k = 1:length(zeros(1,24))
+        for k = 1:length(s_h_u_block)
             if yesno(1,k) == 1
                 yesno(2,k) = 2;
             else
