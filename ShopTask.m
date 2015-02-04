@@ -123,7 +123,7 @@ function [trialpicker, manualclose] = ShopTask(window, c, block, trial, ppnr, ma
             screenId = 1;
             
             %yes - no, left - right. yesno(1) = left, yesno(2) = right. 
-            yesno = c.yesno_LR(:,trial,condition_SA,block);
+            yesno = c.yesno_LR(:,trial,block);
             
             %Image texture
             image = c.trial{1,trial,block};
