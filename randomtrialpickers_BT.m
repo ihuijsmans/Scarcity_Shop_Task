@@ -92,15 +92,14 @@ while choice
 end
 
 %Display winning trial
-disp('ppnr Trialnr gotit bid  brand   product');
+disp('ppnr  trialnr  gotit(1 = yes)  bid  computerprice  brand   product');
 disp([ppnr, trials(i,:)]);
-
 
 %Save winning trial
 win_file = [results_dir, sprintf('WinningTrial_%i.txt', ppnr)];
 ft_id = fopen(win_file,'a+t');
-fprintf(ft_id, '%s\t%s\t%s\t%s\t%s\t%s\n', 'ppnr', 'Trialnr', 'gotit', 'bid', 'brand', 'product');
-fprintf(ft_id, '%i\t%i\t%i\t%.4f\t%s\t%s\n', ppnr, trials{i,:});
+fprintf(ft_id, '%s\t%s\t%s\t%s\t%s\t%s\t%s\n', 'ppnr', 'Trialnr', 'gotit', 'bid', 'computerprice', 'brand', 'product');
+fprintf(ft_id, '%i\t%i\t%i\t%.4f\t%.4f\t%s\t%s\n', ppnr, trials{i,:});
 
 
 
