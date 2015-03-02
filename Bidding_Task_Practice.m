@@ -72,7 +72,6 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
     maxbid = 3;
 
     %Presentation times
-    showselection = 3;
     timeout = 6;
     tooslow = 2;
 
@@ -111,7 +110,7 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
     
     %%              Prepare random trial picker                          %%
   
-    trialpicker = cell(length(c.trial(1,:,1)), 5);
+    trialpicker = cell(length(c.trial(1,:,1)), 6);
     
     %%                      Experiment loop                                  %%
 
@@ -227,7 +226,7 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
                     Screen('DrawTexture', window, image, [], image_loc, 0);
 
                     %Likert scale
-                    likert_draw_NL(window, line_y, sprintf('%s%i', euro, 3)', sprintf('%s%i', euro, 0), white, handle_x, sprintf('%0.2f', bid_round))
+                    likert_draw_NL(window, line_y, sprintf('%s%i', euro, 3)', sprintf('%s%i', euro, 0), white, handle_x, sprintf('%0.2f', bid_round));
 
                     %Next screen
                     screenId = 4;
@@ -331,10 +330,6 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
                         %Flip & wait
                         [VBLTimestamp, BidFlipTimestamp, FlipTimestamp, MissedFlip] = Screen('Flip', window);
                         WaitSecs(presenttime);
-                        %if confirm == 1
-                             %Send trigger to HR signal for each event
-                             %bitsiHR.sendTrigger(HR);                                                              % SEND HR TRIGGER
-                        %end
 
                         %Save cursor data
                         cursordata(:, flip) = [trial, flip, handle_x, response, keyDownTimestamp, tmp_bid, RT, VBLTimestamp, BidFlipTimestamp, FlipTimestamp, MissedFlip];
@@ -369,16 +364,13 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
                     if confirm ~= 0   
                         if gotproduct
                             gotcolor = green;
-                            spent = sprintf('\n%s%0.2f', euro, select_round(bid,0.05));
                             gotcheck = gotit;
                         else
                             gotcolor = red;
-                            spent = sprintf('\n%s%0.2f', euro, 0);
                             gotcheck = gotnot;
                         end
                     else
                         gotcolor = red;
-                        spent = sprintf('\n%s%0.2f', euro, 3);
                         gotcheck = gotnot;
                     end
                         
@@ -392,45 +384,19 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
                     
                     %Set HR trigger
                     HR = c.HR_slow{condition_SA};
-
-                    %Next Screen
-                    screenId = 7;
-
-
-                case 7
-                %%                       Screen 7                        %%
-                %--------------------- Price Payed -----------------------%
-                
-                    spent_txt = 'You have spent';
-
-                    %Draw rectangle + image + gotcheck
-                    Screen('FillRect', window, gotcolor, productselection_loc);
-                    Screen('DrawTexture', window, image , [], image_loc, 0);
-                    Screen('DrawTexture', window, gotcheck , [], checkbox_loc, 0);
-                    %You have spent
-                    DrawFormattedText(window, spent_txt, 'center',line_y, white);  
-                    Screen('TextSize', window, 60);
-                    %Price
-                    DrawFormattedText(window, spent, 'center',line_y, white); 
-                    Screen('TextSize', window, 24);
                     
-                    %Presentation time
-                    presenttime = showselection;
-
+                    %Reset all image info
+                    run = 0;
+                    
                     %To next image
                     trial = trial+1;
 
                     %nr trials per block
                     total_trial = total_trial+1;
-                    
-                    %Set HR trigger
-                    HR = c.HR_moneyspent{condition_SA};
-
-                    %Reset all image info
-                    run = 0;
 
                     %Back from the start
                     screenId = 1;
+
                                     
                 case 999
                     %% Break the experiment in order to continue later
@@ -451,8 +417,6 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
             [VBLTimestamp, lastFlipTimestamp, FlipTimestamp, MissedFlip] = Screen('Flip', window); 
             flip_stamp = toc(mainstart);
             
-            %Send trigger to HR signal for each event
-            %bitsiHR.sendTrigger(HR);                                                              % SEND HR TRIGGER
             if presenttime > 20
                 while presenttime
                     %Continue experiment when hitting spacebar
@@ -499,7 +463,7 @@ function [trialpicker, manualclose] = Bidding_Task_Practice(window, c, block, tr
         fprintf(fid_slider, '%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%i\t%i\t%i\t%i\n',  cursordata);
         
         %Save info for random trial picker
-        trialpicker((trial-1),:) = {(trial-1), gotproduct, bid_round, brand, product};
+        trialpicker((trial-1),:) = {(trial-1), gotproduct, bid_round, computerprice, brand, product};
         
     end
     

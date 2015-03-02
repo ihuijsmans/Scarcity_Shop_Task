@@ -3,29 +3,29 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
     % Inge Huijsmans 
     %
     % Start writing 2014-10-20
-    % Last update 2014-10-28
+    % Last update 2015-3-2
+    %
+    % Deleted 'You spent: ..E' screen
     %
     % Experiment Design:
-    % In this Shop task, participants will place bids on two categories of
+    % In this Bidding task, participants will place bids on two categories of
     % products, either hedonic of utalitarian products. After the bid has been
-    % placed, the computer randomly generates a price per product between 50%
-    % and 100% of the retail price. When participants' bid is higher than the
-    % price generated, the trial information is saved. At the end of the
-    % experiment, one of these trials is selected as bonus for the participants
+    % placed, the computer randomly generates a price per product between
+    % 0-3 Euro. When participants' bid is higher than the price generated, the 
+    % product is selected for the participant. At the end of the experiment, 
+    % one of these trials is selected as bonus for the participants
     % (the food + remaining money)
     % 
     % Participants will complete this task in a 2 (condition:
     % scarcity/abundance) x 2 (product category: utalitarian/hedonic) within
     % subjects design.
-    %
-    % Last update: changed timeout window. Too slow screen is back
+
     
     %%                          Set seed to date+time                        %%
 
     rng shuffle
        
     % setup bitsi stuff for button responses & HR triggers
-    
     setup_bits;
     ShopTaskHRlogs;
     
@@ -72,7 +72,6 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
     maxbid = 3;
 
     %Presentation times
-    showselection = 3;
     timeout = 6;
     tooslow = 2;
 
@@ -116,7 +115,7 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
     
     %%              Prepare random trial picker                          %%
   
-    trialpicker = cell(length(c.trial(1,:,1)), 5);
+    trialpicker = cell(length(c.trial(1,:,1)), 6);
     
     %%                      Experiment loop                                  %%
 
@@ -254,7 +253,7 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
                         Screen('DrawTexture', window, image, [], image_loc, 0);
 
                         %Likert scale
-                        likert_draw_NL(window, line_y, sprintf('%s%i', euro, 3)', sprintf('%s%i', euro, 0), white, handle_x, sprintf('%0.2f', bid_round))
+                        likert_draw_NL(window, line_y, sprintf('%s%i', euro, 3)', sprintf('%s%i', euro, 0), white, handle_x, sprintf('%0.2f', bid_round));
 
                         %Next screen
                         screenId = 4;
@@ -399,16 +398,13 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
                         if confirm ~= 0   
                             if gotproduct
                                 gotcolor = green;
-                                spent = sprintf('\n%s%0.2f', euro, select_round(bid,0.05));
                                 gotcheck = gotit;
                             else
                                 gotcolor = red;
-                                spent = sprintf('\n%s%0.2f', euro, 0);
                                 gotcheck = gotnot;
                             end
                         else
                             gotcolor = red;
-                            spent = sprintf('\n%s%0.2f', euro, 3);
                             gotcheck = gotnot;
                         end
 
@@ -420,46 +416,19 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
                         %Presentation time
                         presenttime = (rand*2)+2;
 
-                        %Set HR trigger
-                        HR = c.HR_slow{condition_SA};
-
-                        %Next Screen
-                        screenId = 7;
-
-
-                    case 7
-                    %%                       Screen 7                        %%
-                    %--------------------- Price Payed -----------------------%
-
-                        spent_txt = 'You have spent';
-
-                        %Draw rectangle + image + gotcheck
-                        Screen('FillRect', window, gotcolor, productselection_loc);
-                        Screen('DrawTexture', window, image , [], image_loc, 0);
-                        Screen('DrawTexture', window, gotcheck , [], checkbox_loc, 0);
-                        %You have spent
-                        DrawFormattedText(window, spent_txt, 'center',line_y, white);  
-                        Screen('TextSize', window, 60);
-                        %Price
-                        DrawFormattedText(window, spent, 'center',line_y, white); 
-                        Screen('TextSize', window, 24);
-
-                        %Presentation time
-                        presenttime = showselection;
-
+                        %Reset all image info
+                        run = 0;
+                        
                         %To next image
                         trial = trial+1;
 
                         %nr trials per block
                         total_trial = total_trial+1;
-
+                        
                         %Set HR trigger
-                        HR = c.HR_moneyspent{condition_SA};
+                        HR = c.HR_gotnot{condition_SA};
 
-                        %Reset all image info
-                        run = 0;
-
-                        %Back from the start
+                        %Next Screen: Fixation cross
                         screenId = 1;
 
                     case 999
@@ -481,7 +450,7 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
                 Screen('DrawTexture', window, reminder, [], reminder_loc, 0);
                 [VBLTimestamp, lastFlipTimestamp, FlipTimestamp, MissedFlip] = Screen('Flip', window); 
                 flip_stamp = toc(mainstart);
-
+                
                 %Send trigger to HR signal for each event
                 bitsiHR.sendTrigger(HR);                                                              % SEND HR TRIGGER
                 
@@ -533,7 +502,7 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
             fprintf(fid_slider, '%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%i\t%i\t%i\t%i\n',  cursordata);
 
             %Save info for random trial picker
-            trialpicker((trial-1),:) = {((block-1)*length(c.trial(:,:,1)))+(trial-1), gotproduct, bid_round, brand, product};
+            trialpicker((trial-1),:) = {((block-1)*length(c.trial(:,:,1)))+(trial-1), gotproduct, bid_round, computerprice, brand, product};
 
         end
 
@@ -542,6 +511,7 @@ function [trialpicker, manualclose] = Bidding_Task(window, c, block, trial, ppnr
     catch me
         me.message
         me.stack
+        me.line
         Screen('CloseAll')
     end
 end
