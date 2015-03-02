@@ -659,7 +659,7 @@ for k = 1:length(c.condition)
                     
                 case 890
                     
-                    DrawFormattedText(window,'You will be redirected to the intruction page', 'center', 'center', white);
+                    DrawFormattedText(window,'You will be redirected to the instruction pages', 'center', 'center', white);
                     presenttime = instructtime;
                     
                     screenID = 891;
